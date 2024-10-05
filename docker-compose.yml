@@ -1,0 +1,12 @@
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8000:8000"
+        environment:
+            DATABASE_URL: mongodb+srv://franciscoghp:franciscoghp@cluster0.vojgy.mongodb.net/db_challenge
+            MAKES_API_CHUNK_SIZE: 1000
+
+

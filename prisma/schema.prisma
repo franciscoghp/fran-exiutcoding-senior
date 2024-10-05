@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model VehicleType {
+  typeId   Int    @id @map("_id")
+  typeName String
+  makeIds  Int[]
+  makes    Make[] @relation(fields: [makeIds], references: [makeId])
+}
+
+model Make {
+  makeId          Int           @id @map("_id")
+  makeName        String
+  vehicleTypesIds Int[]
+  vehicleTypes    VehicleType[] @relation(fields: [vehicleTypesIds], references: [typeId])
+}
+
+model Actualization {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  date DateTime
+}

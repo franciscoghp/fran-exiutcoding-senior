@@ -1,0 +1,26 @@
+type VehicleType {
+    typeId: Int!
+    typeName: String!
+}
+
+type Make {
+    makeId: Int!
+    makeName: String!
+    vehicleTypes: [VehicleType!]!
+}
+
+# Resultado de la query que incluye los datos y el total de items
+type MakesResult {
+    total: Int!
+    items: [Make!]!
+}
+
+# Input para paginación
+input PaginationInput {
+    skip: Int = 0
+    take: Int = 10
+}
+
+type Query {
+    makes(paginationInput: PaginationInput, actualize: Boolean): MakesResult!
+}
