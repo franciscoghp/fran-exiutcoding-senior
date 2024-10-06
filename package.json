@@ -8,8 +8,7 @@
 		"dev": "nest start --watch",
 		"start": "node dist/main",
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-		"test": "jest",
-		"test:cov": "jest --coverage",
+		"test": "jest --coverage",
 		"test:e2e": "jest --config ./test/jest-e2e.json",
 		"db:g": "prisma generate",
 		"gql:g": "ts-node graphql-generate-typings.ts"
