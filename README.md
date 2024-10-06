@@ -13,8 +13,8 @@ Before you begin, ensure you have the following installed:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/franciscoghp/fran-exiutcoding-senior.git
-cd fran-exiutcoding-senior
+git clone https://github.com/franciscoghp/fran-exoutcoding-senior.git
+cd fran-exoutcoding-senior
 ```
 
 ### Step 2: Create Environment Variables File
@@ -46,8 +46,8 @@ This command will:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/franciscoghp/fran-exiutcoding-senior.git
-cd fran-exiutcoding-senior
+git clone https://github.com/franciscoghp/fran-exoutcoding-senior.git
+cd fran-exoutcoding-senior
 ```
 
 ### Step 2: Install Dependencies
