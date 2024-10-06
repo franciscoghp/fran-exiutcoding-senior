@@ -5,9 +5,10 @@ import { MakesController } from "./makes.controller";
 import { MakesResolver } from "./makes.resolver";
 import { MakesService } from "./makes.service";
 import { MakesServiceUtils } from "./makes.service.utils";
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-	imports: [UtilsModule, DatabaseModule],
+	imports: [UtilsModule, DatabaseModule, ScheduleModule.forRoot()],
 	controllers: [MakesController],
 	providers: [MakesResolver, MakesService, MakesServiceUtils],
 })

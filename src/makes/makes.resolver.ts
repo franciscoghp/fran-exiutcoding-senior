@@ -9,9 +9,10 @@ export class MakesResolver {
 
 	@Query("makes")
     async makes(
-        @Args('paginationInput', { nullable: true }) paginationInput: PaginationInput,
+        @Args('paginationInput', { nullable: true }) paginationInput?: PaginationInput,
         @Args('actualize', { nullable: true }) actualize?: boolean,
     ): Promise<{ total: number, items: MakeDto[] }> {
+        console.log({paginationInput})
         return this.makesService.getMakes(paginationInput, actualize);
     }
 }

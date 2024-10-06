@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
-import cron from "node-cron";
 import { DatabaseService } from "../database/database.service";
 import { UtilsService } from "../utils/utils.service";
 import { MakesServiceUtils } from "./makes.service.utils";
 import type { ParsedMake, ParsedMakesResponse } from "./types/fetch-makes.type";
 import { MakeDto } from "./types/make.dto";
 import { PaginationInput } from "./types/paginationInput.type";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class MakesService {
@@ -17,16 +17,19 @@ export class MakesService {
 		private readonly makeServiceUtils: MakesServiceUtils,
 		private readonly utilsService: UtilsService
 	) {
-		cron.schedule("0 0 * * *", async () => {
-			try {
-				console.log("[Cron]: Fetching makes...");
-				const res = await this.getMakes( { skip: 0,  take: 10 } ,true);
-				console.log(`[Cron]: Successfully fetched ${res.total} makes!`);
-			} catch (error) {
-				console.error("[Cron]: Error during fetching makes\n" + error);
-			}
-		});
 	}
+
+	@Cron(CronExpression.EVERY_30_MINUTES_BETWEEN_9AM_AND_5PM)
+	async handleCron() {
+		try {
+			console.log("[Cron]: Fetching makes...");
+			const res = await this.getMakes( { skip: 0,  take: 10 } ,true);
+			console.log(`[Cron]: Successfully fetched ${res.total} makes!`);
+		} catch (error) {
+			console.error("[Cron]: Error during fetching makes\n" + error);
+		}
+	}
+	
     public async getMakes(paginationInput?: PaginationInput, actualize?: boolean): Promise<{ total: number, items: MakeDto[] }> {
         const lastActualizationAt = await this.databaseService.actualization.findFirst({
             select: { date: true },
@@ -43,7 +46,7 @@ export class MakesService {
         return { total: items.length, items };
     }
 
-    private async getMakesFromDb(paginationInput?: PaginationInput): Promise<{ total: number, items: MakeDto[] }> {
+    public async getMakesFromDb(paginationInput?: PaginationInput): Promise<{ total: number, items: MakeDto[] }> {
         const total = await this.databaseService.make.count(); // Contamos todos los registros
 
         const items = await this.databaseService.make.findMany({
@@ -126,7 +129,7 @@ export class MakesService {
 		return makesResponses;
 	}
 
-	private async saveMake(make: MakeDto): Promise<void> {
+	public async saveMake(make: MakeDto): Promise<void> {
 		// console.log('saveMake', make)
 		for (const type of make.vehicleTypes) {
 			await this.databaseService.vehicleType.upsert({
