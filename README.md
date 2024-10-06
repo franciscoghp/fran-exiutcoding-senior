@@ -1,72 +1,283 @@
-# Backend challenge 💪
+# Francisco Herrera Project Challenge
 
-## Assignments:
+## Prerequisites
 
-A new client wants us to develop the services, and create the infrastructure for their new project. The client wants
-their services to be fast, maintainable, and scalable. The client wants to create a service that can parse XML data and
-transform it to JSON format.
+Before you begin, ensure you have the following installed:
 
-- Service must parse XML
-    - Parse all the Makes from: https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=XML
-    - Get all the Vehicle Types per
-      Make: https://vpic.nhtsa.dot.gov/api/vehicles/GetVehicleTypesForMakeId/440?format=xml
-- Service must produce JSON
-    - Combine all the of XML information into a single JSON object
-    - Produce an array of objects will the all of the information from the XML endpoints
-    - The JSON must look like the following: https://gist.github.com/mbaigbimm/d340e7800d17737482e71c9ad1856f68
-- Service must have a single endpoint to get all the data
-- Service must be Dockerized
-- Service must save this into a document based datastore
-- Service must follow NodeJS best practices for project structure, and code
+- [Docker](https://www.docker.com/)
 
-### Nice to have:
+## Setup Instructions
 
-- Service may schedule a job to get XML information on a regular basis
-- Service can expose GraphQL endpoint for GQL queries
-- Service can contain tests for each data transformation
+## Method 1: Using Docker Compose
 
-## Solution
-
-### Technologies:
-
-- NestJS + Typescript
-- MongoDB + Prisma
-- Docker and Docker Compose
-- Jest
-
-#### Explanation:
-
-According to requirements, the application has to be fast, maintainable and scalable. NestJS was chosen as a main
-technology because it is a progressive Node.js framework for building efficient, reliable
-and scalable backend applications. It uses modern JavaScript, is built with TypeScript and utilize OOP principles, which
-makes it a good choice for this project. All these features combined with TypeScript create an excellent DX (developer
-experience). It also has a great community and a lot of useful plugins, for example to work with GraphQL. It is also
-easily converted to microservices architecture, which makes it scalable.
-
-MongoDB was chosen as a database because it is a well-fitted document-based database for this project (which is required
-by the task). As an ORM I chose Prisma, because it is a modern and powerful ORM for Node.js. It creates a abstract layer
-between the database and the application, which makes it easy to switch between databases. It generates types based on a
-schema, which makes it easy (and safe!) to work with data in the application.
-
-According to requirements, the application has to be Dockerized, so I created a Dockerfile with two-staged production
-optimized configuration. I also added `docker-compose.yml` to the root directory, so you can easily test the
-application (don't forget to set `DATABASE_URL` environment variable, I used MongoDB Atlas).
-
-### Getting started
-
-Before you start, make sure you have `DATABASE_URL` environment variable set up in `.env` or `../docker-compose.yml`
-file.
-
-Local
+### Step 1: Clone the Repository
 
 ```bash
-npm install
-npm run dev
+git clone https://github.com/franciscoghp/fran-exiutcoding-senior.git
+cd fran-exiutcoding-senior
 ```
 
-Docker
+### Step 2: Create Environment Variables File
+
+Create a .env file in the root of the project and add the necessary environment variables. Here is an example:
 
 ```bash
-cd ../
-docker-compose up -d --build backend
+MAKES_API_CHUNK_SIZE=1000
+DATABASE_URL=mongodb+srv://franciscoghp:franciscoghp@cluster0.vojgy.mongodb.net/db_challenge
 ```
+
+### Step 3: Run the Project with Docker Compose
+
+Ensure Docker is running on your machine. Then, start the services using Docker Compose:
+
+```bash
+docker-compose up
+```
+
+This command will:
+
+- Build and start the server.
+- Pull and start PostgreSQL and Redis containers.
+- Push the Prisma schema to the PostgreSQL database.
+- Start the NestJS application.
+
+## Method 2: Manual Setup
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/franciscoghp/fran-exiutcoding-senior.git
+cd fran-exiutcoding-senior
+```
+
+### Step 2: Install Dependencies
+
+```bash
+$ npm install
+```
+
+### Step 3: Configure Environment Variables
+
+Create a .env file in the root of the project and add the necessary environment variables. Here is an example:
+
+```bash
+MAKES_API_CHUNK_SIZE=1000
+DATABASE_URL=mongodb+srv://franciscoghp:franciscoghp@cluster0.vojgy.mongodb.net/db_challenge
+```
+
+
+### Step 7: Run the Project
+
+```bash
+# development
+$ npm run start
+
+# watch mode
+$ npm run start:dev
+```
+
+### Step 8: Running Tests
+
+To run the tests, use the following command:
+
+```bash
+# test coverage
+$ npm run test
+
+```
+
+## How the Application Works
+
+GraphQL Endpoint: `http://localhost:3000/graphql`
+The primary GraphQL query for this application is getJSON.
+
+## Query
+
+```bash
+query makes($paginationInput: PaginationInput, $actualize: Boolean) {
+  makes(paginationInput: $paginationInput, actualize: $actualize) {
+    total
+    items {
+      makeId
+      makeName
+      vehicleTypes {
+        typeId
+        typeName
+      }
+    }
+  }
+}
+```
+
+## Example Input
+
+```bash
+query {
+  makes(paginationInput: { skip: 0, take: 10 }, actualize: true) {
+    total
+    items {
+      makeId
+      makeName
+      vehicleTypes {
+        typeId
+        typeName
+      }
+    }
+  }
+}
+
+```
+
+## Example Response
+
+```bash
+{
+  "data": {
+    "makes": {
+      "total": 667,
+      "items": [
+        {
+          "makeId": 475,
+          "makeName": "ACURA",
+          "vehicleTypes": [
+            {
+              "typeId": 2,
+              "typeName": "Passenger Car"
+            },
+            {
+              "typeId": 3,
+              "typeName": "Truck"
+            },
+            {
+              "typeId": 7,
+              "typeName": "Multipurpose Passenger Vehicle (MPV)"
+            }
+          ]
+        },
+        {
+          "makeId": 582,
+          "makeName": "AUDI",
+          "vehicleTypes": [
+            {
+              "typeId": 2,
+              "typeName": "Passenger Car"
+            },
+            {
+              "typeId": 7,
+              "typeName": "Multipurpose Passenger Vehicle (MPV)"
+            }
+          ]
+        },
+        {
+          "makeId": 608,
+          "makeName": "280 TRAILERS",
+          "vehicleTypes": [
+            {
+              "typeId": 6,
+              "typeName": "Trailer"
+            }
+          ]
+        },
+        {
+          "makeId": 609,
+          "makeName": "A & E TRAILERS",
+          "vehicleTypes": [
+            {
+              "typeId": 6,
+              "typeName": "Trailer"
+            }
+          ]
+        },
+        {
+          "makeId": 610,
+          "makeName": "A-1 CUSTOM TRAILER AKA TOW MASTER",
+          "vehicleTypes": [
+            {
+              "typeId": 6,
+              "typeName": "Trailer"
+            }
+          ]
+        },
+        {
+          "makeId": 611,
+          "makeName": "A-BAR-D MFG.",
+          "vehicleTypes": []
+        },
+        {
+          "makeId": 614,
+          "makeName": "A.R.M.",
+          "vehicleTypes": [
+            {
+              "typeId": 6,
+              "typeName": "Trailer"
+            }
+          ]
+        },
+        {
+          "makeId": 621,
+          "makeName": "ABASTECEDORA DE TRACTOPARTES Y REFACCIONES",
+          "vehicleTypes": [
+            {
+              "typeId": 6,
+              "typeName": "Trailer"
+            }
+          ]
+        },
+        {
+          "makeId": 622,
+          "makeName": "ABILITY METALS",
+          "vehicleTypes": [
+            {
+              "typeId": 6,
+              "typeName": "Trailer"
+            }
+          ]
+        },
+        {
+          "makeId": 623,
+          "makeName": "ABSOLUTE CONCEPTS",
+          "vehicleTypes": [
+            {
+              "typeId": 6,
+              "typeName": "Trailer"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+```
+
+### Application Logic
+
+1. Initialization:
+
+- The query getJSON checks if there is any data in the database.
+  If there are no rows in the database, it triggers the data collection process.
+- An explicit flag (refreshData) in the query can also trigger the data collection process.
+
+2. Data Collection:
+
+- When data collection is triggered, the Redis queue is cleared.
+  The application fetches all vehicle makes from the API: `https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=XML`.
+- If the API throws an error, it fetches the XML file from a local path: `../../data/getallmakes.xml`.
+- The fetched XML data is transformed into JSON using one of two available transformers: xml2js or DOMParser.
+
+3. Batch Processing:
+
+- Once all vehicle makes are available, they are divided into batches of 25.
+- Jobs are created for each batch and added to the queue.
+
+4. Queue Processing:
+
+- The queue processor handles each job by saving the vehicle makes into the Make table in the database.
+- For each vehicle make, it fetches the vehicle types from the API: `https://vpic.nhtsa.dot.gov/api/vehicles/GetVehicleTypesForMakeId/${makeId}?format=xml`.
+- The fetched vehicle types are transformed into JSON and saved into the VehicleType table in the database.
+- This process continues until all jobs are completed.
+
+5. Job Status:
+
+- The status of the jobs can be found in the response of the getJSON query.
+- The response includes the job status, pagination information, and the transformed data.

@@ -9,9 +9,6 @@ import { MakeDto, VehicleTypeDto } from "./types/make.dto";
 @Injectable()
 export class MakesServiceUtils {
 	public parseMakesXmlResponse(xml: string): ParsedMakesResponse {
-		// console.log('-----------------------------------------')
-		// console.log(xml)
-		// console.log('-----------------------------------------')
 		const validationResult = XMLValidator.validate(xml);
 		if (typeof validationResult !== "boolean") {
 			throw new Error("Unable to validate XML with makes response:\n" + validationResult.err.msg);
@@ -19,8 +16,6 @@ export class MakesServiceUtils {
 
 		const parser = new XMLParser();
 		const json = parser.parse(xml);
-		// console.log({json})
-		// console.log(this.isMakesResponse(json))
 		if (!this.isMakesResponse(json)) {
 			throw new Error("XML does not fulfills makes response requirements\n" + json);
 		}
@@ -74,14 +69,11 @@ export class MakesServiceUtils {
 	}
 
 	private isMakesResponse(obj: unknown): obj is MakesResponse {
-		// console.log('isMakesResponse')
 		if (typeof obj !== "object" || obj === null) {
-			// console.log('mirame 1', typeof obj !== "object" || obj === null)
 			return false;
 		}
 
 		if (!("Response" in obj && typeof obj["Response"] === "object" && obj["Response"] !== null)) {
-			// console.log('mirame 2', typeof obj !== "object" || obj === null)
 			return false;
 		}
 
@@ -94,7 +86,6 @@ export class MakesServiceUtils {
 				obj["Response"]["Results"] !== null
 			)
 		) {
-			// console.log('mirame 3', typeof obj !== "object" || obj === null)
 			return false;
 		}
 
@@ -102,11 +93,8 @@ export class MakesServiceUtils {
 			obj["Response"]["Results"] = {
 				AllVehicleMakes: [],
 			};
-			// console.log('mirame 3', typeof obj !== "object" || obj === null)
 			return true;
 		}
-		// console.log("AllVehicleMakes" in obj["Response"]["Results"])
-		// console.log("AllVehicleMakes" in obj["Response"]["Results"] && Array.isArray(obj["Response"]["Results"]["AllVehicleMakes"]))
 		return "AllVehicleMakes" in obj["Response"]["Results"] && Array.isArray(obj["Response"]["Results"]["AllVehicleMakes"]);
 	}
 

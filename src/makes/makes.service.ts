@@ -78,27 +78,24 @@ export class MakesService {
 
 	private async getVehiclesTypes(makes: ParsedMake[]): Promise<MakeDto[]> {
 		const makesResponses: MakeDto[] = [];
-		console.log('makes.length', makes.length)
-		console.log('this.configService.get("MAKES_API_CHUNK_SIZE")', this.configService.get("MAKES_API_CHUNK_SIZE"))
+		console.log('total items', makes.length)
 		const chunks = this.utilsService.createChunks(makes, this.configService.get("MAKES_API_CHUNK_SIZE") ?? 1000);
-		console.log('chunks?.length', chunks?.length)
-		// console.log('chunks', chunks)
+		console.log('total chunks', chunks?.length)
 		let count = 0
 		let countRejected = 0
 		let countGuardado = 0
 		let countMake = 0
 		for (const chunk of chunks) {
-			console.log('chunk.lenght', chunk.length)
+
 			const fetchResponse = await Promise.allSettled(
 				chunk.map(make => axios.get<string>(`https://vpic.nhtsa.dot.gov/api/vehicles/GetVehicleTypesForMakeId/${make.makeId}?format=XML`))
 			);
 
-			console.log('deberia haber 1000 aqui: fetchResponse.length', fetchResponse.length)
 			for (const response of fetchResponse) {
 				if (response.status === "rejected") {
 					countRejected =  countRejected + 1
 					count =  count + 1
-					console.log('count procesado', count, ' rejected', countRejected)
+					console.log('item processed', count, ' rejected', countRejected)
 					// better handling, e.g. retrying or logging
 					continue;
 				}
@@ -108,8 +105,7 @@ export class MakesService {
 				if (!make) {
 					countMake =  countMake + 1
 					count =  count + 1
-					console.log('count procesado', count, ' !make', countMake)
-					console.log()
+					console.log('item processed', count, ' !make', countMake)
 					// make from response id not found in chunk, API mistake, because we are fetching only makes from chunk
 					// better handling, e.g. logging
 					continue;
@@ -119,18 +115,16 @@ export class MakesService {
 				await this.saveMake(makeDto);
 				count =  count + 1
 				countGuardado =  countGuardado + 1
-				console.log('count procesado', count, ' count del countGuardado', countGuardado)
+				console.log('item processed', count, ' count del countGuardado', countGuardado)
 				makesResponses.push(makeDto);
 			}
 			count =  count + 1
-			console.log('count del chunk', count)
 		}
-		console.log('TERMINO CICLO', makesResponses.length)
+
 		return makesResponses;
 	}
 
 	public async saveMake(make: MakeDto): Promise<void> {
-		// console.log('saveMake', make)
 		for (const type of make.vehicleTypes) {
 			await this.databaseService.vehicleType.upsert({
 				create: {
